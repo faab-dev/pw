@@ -1,0 +1,43 @@
+
+<h1>{{getTitle()}}</h1>
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="dataSource">
+
+  <!-- Position Column -->
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef> Date </th>
+    <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+  </ng-container>
+
+  <!-- Name Column -->
+  <ng-container matColumnDef="username">
+    <th mat-header-cell *matHeaderCellDef> Username </th>
+    <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container matColumnDef="amount">
+    <th mat-header-cell *matHeaderCellDef> Amount </th>
+    <td mat-cell *matCellDef="let element"> {{element.amount}} </td>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container matColumnDef="balance">
+    <th mat-header-cell *matHeaderCellDef> Balance </th>
+    <td mat-cell *matCellDef="let element"> {{element.balance}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="button">
+    <th mat-header-cell *matHeaderCellDef> Control </th>
+    <td mat-cell *matCellDef="let element"> <div class="button">
+      <button type="button" mat-button
+              (click) = "onClickTableItem(element)"
+      >Copy transfer</button>
+    </div> </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table>
+
+<div *ngIf="!dataSource">You haven't made any transfers yet.</div>

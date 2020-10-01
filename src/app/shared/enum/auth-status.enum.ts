@@ -1,0 +1,4 @@
+export enum AuthStatusEnum {
+  INITIALIZED = 'INITIALIZED',
+  HTTP_PROCESSING = 'HTTP_PROCESSING',
+}

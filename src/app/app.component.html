@@ -1,0 +1,19 @@
+<app-nav-header
+  [sidenav]="sidenav"
+></app-nav-header>
+
+<mat-sidenav-container>
+  <mat-sidenav #sidenav>
+    <mat-nav-list>
+
+      <a mat-list-item [routerLink]="'/login'"> Login </a>
+      <a mat-list-item [routerLink]="'/sign-in'"> SignIn </a>
+
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div style="height: 88vh;">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
