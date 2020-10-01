@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>Create transfer</h1>
+<div mat-dialog-content>
+  <form [formGroup]="formModel" (ngSubmit)="onSubmit()" *ngIf="formModel">
+    <p>
+      <mat-form-field class="example-full-width" >
+        <input type="text"
+               placeholder="Choose a Recipient"
+               aria-label="Username"
+               matInput
+               [matAutocomplete]="auto" formControlName="name">
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+          <mat-option *ngFor="let option of filteredOptions | async | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field appMongoIndexLimit>
+        <input matInput type="number" step="0.01" placeholder="Amount" formControlName="amount">
+      </mat-form-field>
+    </p>
+
+    <div class="button">
+
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button mat-dialog-close cdkFocusInitial (click)="onNoClick()">No Thanks</button>
+   <!--   <button mat-button [mat-dialog-close]="data.amount" cdkFocusInitial>Ok</button>-->
+      <button type="submit" mat-button >Create</button>
+    </div>
+
+  </form>
+</div>

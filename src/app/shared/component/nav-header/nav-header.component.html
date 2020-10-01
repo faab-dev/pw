@@ -1,0 +1,51 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <div class="nav-header-container">
+      <div class="nav-header-container--main">
+        <!--<button mat-icon-button class="menu-button">
+          <mat-icon (click)="onClickToggle()">menu</mat-icon>
+        </button>-->
+        {{title}}
+        <!--<div>{{protectedMenu | json}}</div>-->
+        <span class="menu-spacer"></span>
+      </div>
+      <div class="nav-header-container--auth">
+        <div>
+          <ng-container *ngFor="let authMenuItem of authMenu">
+            <a mat-button [routerLink]="authMenuItem.path" *ngIf="authMenuItem.path && authMenuItem.show()">
+              {{authMenuItem.title}}
+            </a>
+            <a mat-button *ngIf="!authMenuItem.path && !!(authMenuItem.click) && authMenuItem.show()"
+              (click)="authMenuItem.click($event)"
+            >
+              {{authMenuItem.title}}
+            </a>
+          </ng-container>
+
+          <!--<a mat-button [routerLink]="'/sign-in'"> SignIn </a>-->
+        </div>
+      </div>
+    </div>
+  </mat-toolbar-row>
+
+  <mat-toolbar-row>
+    <span style="font-size: 12px;" *ngIf="!(protectedMenu && protectedMenu.show())">{{description}}</span>
+    <div class="protected-menu-container" *ngIf="protectedMenu && protectedMenu.show()">
+      <div class="protected-menu-create">
+        <a mat-button [routerLink]="protectedMenu.path" *ngIf="protectedMenu.path && protectedMenu.show()">
+          {{protectedMenu.title}}
+        </a>
+        <a mat-button *ngIf="!protectedMenu.path && !!(protectedMenu.click) && protectedMenu.show()"
+           (click)="protectedMenu.click($event)"
+        >
+          {{protectedMenu.title}}
+        </a>
+      </div>
+      <div class="protected-menu-user-info">
+
+        {{getUsername()}} Balance: {{getBalance()}}
+      </div>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
+

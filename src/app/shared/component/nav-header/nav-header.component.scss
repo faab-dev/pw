@@ -1,0 +1,43 @@
+.menu-button {
+  display: block;
+}
+
+.nav-header-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  .nav-header-container--main {
+    flex: 1;
+  }
+  .nav-header-container--auth {
+    text-align: right;
+    width: 100px;
+
+  }
+}
+
+.protected-menu-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+  .protected-menu-create, .protected-menu-user-info {
+    flex: 1;
+  }
+
+  .protected-menu-user-info {
+    text-align: left;
+    order: 1;
+  }
+
+  .protected-menu-create {
+   text-align: right;
+    order: 2;
+  }
+}
+
+@media screen and (min-width: 400px) {
+  .menu-button {
+    display: none;
+  }
+}
