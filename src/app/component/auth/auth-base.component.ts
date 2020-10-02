@@ -52,6 +52,7 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
 
     // form error
     if (field === null) {
+
       if (
         this.flagFormError
         && this.flagFormError.validation_errors
@@ -59,12 +60,15 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
       ) {
         return this.flagFormError;
       }
-      formValidationErrors.validation_errors = this.formModel.errors;
+
       formValidationErrors.show = this.formModel.errors !== null;
+      formValidationErrors.validation_errors = this.formModel.errors;
       const self = this;
       this.flagFormError = formValidationErrors;
       if (formValidationErrors.show && formValidationErrors.validation_errors) {
+
         setTimeout(() => {
+
           self.flagFormError = null;
           return;
         }, 6000);
@@ -103,6 +107,7 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
     const errorMessageValue: {[key: string]: any} = {
       required: 'This field is required. '
     };
+    errorMessageValue[AuthError.USER_OR_PASSWORD_NOT_FOUND] = 'User or/and password are incorrect';
     let message = '';
     for (const [key, value] of Object.entries(errors.validation_errors)) {
       if (
@@ -119,7 +124,7 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
     return message;
   }
 
-  showError(field: string): boolean {
+  showError(field: string | null): boolean {
     const errors: FormValidationErrors = this.getFormValidationErrors(field);
     return (errors && errors.show);
   }
@@ -133,6 +138,7 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
       validation_errors: {},
       show: false
     };
+
     if (typeof validationErrorsKey !== 'string') {
       if (!Array.isArray(validationErrorsKey)) {
         return;
@@ -146,12 +152,13 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
         formValidationErrors.validation_errors[validationErrorsKey[i]] = true;
       }
     } else {
-      if (formValidationErrors.validation_errors == null) {
+      if (formValidationErrors.validation_errors === null) {
         formValidationErrors.validation_errors = {};
       }
       formValidationErrors.validation_errors[validationErrorsKey] = true;
+
     }
-    this.formModel.setErrors(formValidationErrors);
+    this.formModel.setErrors(formValidationErrors.validation_errors);
     this.authStatus = AuthStatusEnum.INITIALIZED;
 
   }

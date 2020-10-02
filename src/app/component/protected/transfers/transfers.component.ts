@@ -4,10 +4,12 @@ import {UserInfo} from '../../../shared/interface/user-info.interface';
 import {HttpService} from '../../../shared/service/http.service';
 import {TransferInterface} from '../../../shared/interface/transfer.interface';
 import {TransTokenInterface} from '../../../shared/interface/trans-token.interface';
-import {MatDialog} from '@angular/material/dialog';
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {TransferCreateDialogComponent} from '../../../shared/component/transfer-create/transfer-create-dialog.component';
 import {MenuService} from '../../../shared/service/menu.service';
 import {Subscription} from 'rxjs';
+import {ErrorStatus} from '../../../shared/enum/error-status.enum';
+import {UserService} from '../../../shared/service/user.service';
 
 @Component({
   selector: 'app-transfers',
@@ -15,8 +17,6 @@ import {Subscription} from 'rxjs';
   styleUrls: ['transfers.component.scss']
 })
 export class TransfersComponent extends SeparatedBaseComponent {
-
-  transfers: TransferInterface[] = [];
 
   displayedColumns: string[] = ['date', 'username', 'amount', 'balance', 'button'];
   dataSource: TransferInterface[] = [];
@@ -26,7 +26,8 @@ export class TransfersComponent extends SeparatedBaseComponent {
   constructor(
     private http: HttpService,
     private dialog: MatDialog,
-    private menu: MenuService
+    private menu: MenuService,
+    private userService: UserService
   ) {
     super();
   }
@@ -76,7 +77,9 @@ export class TransfersComponent extends SeparatedBaseComponent {
           );
         },
         failed(error): void {
-          //
+          if (error.status === ErrorStatus.UNAUTHORIZED) {
+            self.userService.logout(ErrorStatus.UNAUTHORIZED);
+          }
         }
       });
   }
@@ -88,13 +91,22 @@ export class TransfersComponent extends SeparatedBaseComponent {
       ({username = '', amount = 0} = transfer);
     }
 
-    const dialogRef = this.dialog.open(TransferCreateDialogComponent, {
-      width: '250px',
-      data: {
-        name: (username) ? username : '',
-        amount: isNaN(amount) ? 0 : Math.abs(amount)
-      }
-    });
+    const configDialog = new MatDialogConfig();
+
+    configDialog.width = '60vw';
+    configDialog.height = '60vh';
+    configDialog.maxWidth = '60vw';
+    configDialog.maxHeight = '60vh';
+    configDialog.minWidth = '60vw';
+    configDialog.minHeight = '60vh';
+    configDialog.panelClass = 'create-transfer-panel'
+    configDialog.data = {
+      name: (username) ? username : '',
+      amount: isNaN(amount) ? 0 : Math.abs(amount)
+    }
+
+
+    const dialogRef = this.dialog.open(TransferCreateDialogComponent, configDialog);
 
     dialogRef.afterClosed().subscribe(result => {
       this.updateSource();

@@ -28,6 +28,11 @@
         <button type="submit" mat-button>Sign in</button>
       </div>
 
+      <div class="mat-error" *ngIf="showError(null)">
+        <mat-error>{{getError(null)}}</mat-error>
+      </div>
+
+
     </form>
   </mat-card-content>
 </mat-card>

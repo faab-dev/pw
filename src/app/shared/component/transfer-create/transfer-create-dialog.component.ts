@@ -10,6 +10,9 @@ import {HttpService} from '../../service/http.service';
 import {ResponseInterfaces} from '../../interface/response.interface';
 import {TransTokenNewInterface} from '../../interface/trans-token-new.interface';
 import {UserService} from '../../service/user.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ErrorHandleEnum} from '../../enum/error-handler.enum';
+import {ErrorStatus} from '../../enum/error-status.enum';
 
 @Component({
   selector: 'app-transfer-create-dialog',
@@ -20,6 +23,13 @@ export class TransferCreateDialogComponent extends SeparatedBaseComponent {
   formModel: FormGroup;
   options: string[] = [];
   filteredOptions: Observable<Observable<string[]>>;
+  httpError = '';
+  private errorTimer: any;
+  private readonly errorTimerValue = 3000;
+  private typeTimer: any;
+  private readonly typeTimerValue = 600;
+
+
 
   constructor(
     public dialogRef: MatDialogRef<TransferCreateDialogComponent>,
@@ -42,34 +52,45 @@ export class TransferCreateDialogComponent extends SeparatedBaseComponent {
     }
     if (fControlName) {
       fControlName.setValue(this.data.name);
+      const self = this;
 
       this.filteredOptions = fControlName.valueChanges.pipe(
         startWith(''),
         map(
           (nameFilterValue) => {
-            console.log('before new observable nameFilterValue: ' + nameFilterValue);
             return new Observable(
               (observer: Observer<string[]>) => {
-                this.http
-                  .post<FilteredUsernameInterface[]>(
-                    '/api/protected/users/list',
-                    {filter: nameFilterValue},
-                    {
-                      success(objs: FilteredUsernameInterface[]): void {
-                        console.log('http success objs: ' + objs);
-                        if (!objs || !Array.isArray(objs)) {
-                          return;
-                        }
-                        console.log('objs: ');
-                        console.log(objs);
-                        observer.next(objs.map(
-                          (value: FilteredUsernameInterface) => {
-                            return value.name;
+                clearTimeout(self.typeTimer);
+                const value = nameFilterValue.trim().toLocaleLowerCase();
+                if (!value) {
+                  return;
+                }
+                self.typeTimer = setTimeout(
+                  () => {
+                    this.http
+                      .post<FilteredUsernameInterface[]>(
+                        '/api/protected/users/list',
+                        {filter: value},
+                        {
+                          success(objs: FilteredUsernameInterface[]): void {
+                            if (!objs || !Array.isArray(objs)) {
+                              return;
+                            }
+                            observer.next(objs.map(
+                              (userValue: FilteredUsernameInterface) => {
+                                return userValue.name;
+                              }
+                            ));
+                          },
+                          failed(err: HttpErrorResponse): void {
+                            if (err.status === ErrorStatus.UNAUTHORIZED) {
+                              self.userService.logout(ErrorStatus.UNAUTHORIZED);
+                            }
                           }
-                        ));
-                      }
-                    } as ResponseInterfaces<FilteredUsernameInterface[]>
-                  );
+                        } as ResponseInterfaces<FilteredUsernameInterface[]>
+                      );
+                  }, self.typeTimerValue
+                );
               }
             );
           }
@@ -119,6 +140,12 @@ export class TransferCreateDialogComponent extends SeparatedBaseComponent {
         {
           success(obj: TransTokenNewInterface): void {
             self.dialogRef.close();
+          },
+          failed(err: HttpErrorResponse): void {
+            if (err.status === ErrorStatus.UNAUTHORIZED) {
+              self.userService.logout(ErrorStatus.UNAUTHORIZED);
+            }
+            self.setError(err.error);
           }
         } as ResponseInterfaces<TransTokenNewInterface>
       );
@@ -127,6 +154,16 @@ export class TransferCreateDialogComponent extends SeparatedBaseComponent {
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  setError(message: string): void {
+    clearTimeout(this.errorTimer);
+    this.httpError = message;
+    this.errorTimer = setTimeout(
+      () => {
+        this.httpError = '';
+      }, this.errorTimerValue
+    );
   }
 
 }
