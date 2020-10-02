@@ -4,17 +4,17 @@ import {BaseErrorHandler} from '../error/base.error-handler';
 import {DefaultErrorHandler} from '../error/default.error-handler';
 import {StorageService} from './storage.service';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
-import {HttpHeaderEnum} from "../enum/http-header.enum";
-import {Observable} from "rxjs";
-import {ResponseInterfaces} from "../interface/response.interface";
-import {HttpRequestOptionsInterface} from "../interface/http-request-options.interface";
+import {HttpHeaderEnum} from '../enum/http-header.enum';
+import {Observable} from 'rxjs';
+import {ResponseInterfaces} from '../interface/response.interface';
+import {HttpRequestOptionsInterface} from '../interface/http-request-options.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HttpService {
 
-  private httpOptions;
+  private httpOptions: HttpRequestOptionsInterface | undefined;
  // private loadingType: LoadingEnum = LoadingEnum.FULL;
   private contentType = 'application/json';
   private responseType: 'json' | 'blob' = 'json';
@@ -39,7 +39,7 @@ export class HttpService {
     this.emitLogAccess.emit(message);
   }
 
-  createUrl(url): string {
+  createUrl(url: string): string {
     if (url != null && url.length > 0) {
       if (url.charAt(0) !== '/') {
         url = '/' + url;
@@ -55,7 +55,7 @@ export class HttpService {
     this.baseUrl = environment.url_pw_backend;
     this.auth = true;
     this.appKey = null;
-    this.httpOptions = null;
+    this.httpOptions = undefined;
   }
 
   setResponseType(type: 'blob' | 'json'): this {
@@ -63,7 +63,7 @@ export class HttpService {
     return this;
   }
 
-  content(type): HttpService {
+  content(type: string): HttpService {
     this.contentType = type;
     return this;
   }
@@ -73,7 +73,7 @@ export class HttpService {
     return this;
   }
 
-  options(options): HttpService {
+  options(options: any): HttpService {
     this.httpOptions = options;
     return this;
   }
@@ -106,7 +106,9 @@ export class HttpService {
     return this.request('DELETE', this.createUrl(shortUrl), this.createOptions(undefined, this.createUrl(shortUrl)), response);
   }
 
-  request<T>(method: string, url: string, options: HttpRequestOptionsInterface, response, iterator: number = 0, sync?: boolean): Observable<any> | Promise<any> {
+  request<T>(
+    method: string, url: string, options: HttpRequestOptionsInterface, response: ResponseInterfaces<T>, iterator: number = 0, sync?: boolean
+  ): Observable<any> | Promise<any> {
     // const loadingType = this.loadingType;
     // options.withCredentials = false;
     if (method !== 'DELETE') {
@@ -118,7 +120,7 @@ export class HttpService {
 
     const self = this;
 
-    const observable = this.http.request(method, url, options);
+    const observable: Observable<any> = this.http.request(method, url, options);
     observable.subscribe(
       (next) => {
         if (next instanceof HttpResponse) {
@@ -143,7 +145,7 @@ export class HttpService {
     return observable;
   }
 
-  post<T>(shortUrl: string, obj, response: ResponseInterfaces<T>, sync?: boolean): Observable<any> | Promise<any> {
+  post<T>(shortUrl: string, obj: object, response: ResponseInterfaces<T>, sync?: boolean): Observable<any> | Promise<any> {
     return this.request('POST', this.createUrl(shortUrl), this.createOptions(obj, this.createUrl(shortUrl)), response, 0, sync);
   }
 

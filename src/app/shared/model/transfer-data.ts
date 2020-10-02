@@ -1,6 +1,6 @@
 import {FormGroupInterface} from '../interface/form-group.interface';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {UserService} from "../service/user.service";
+import {UserService} from '../service/user.service';
 
 export class TransferData implements FormGroupInterface {
 

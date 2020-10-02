@@ -1,7 +1,8 @@
 import {Component} from '@angular/core';
 import {SeparatedBaseComponent} from '../../shared/component/separated-base/sepatated-base.component';
 import {ActivatedRoute, ParamMap} from '@angular/router';
-import {AppPathEnum} from "../../shared/enum/app-path.enum";
+import {AppPathEnum} from '../../shared/enum/app-path.enum';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-error',
@@ -9,7 +10,7 @@ import {AppPathEnum} from "../../shared/enum/app-path.enum";
   styleUrls: ['error.component.scss']
 })
 export class ErrorComponent extends SeparatedBaseComponent {
-  private activatedRouteSubscription;
+  private activatedRouteSubscription: Subscription;
   errorCode = 501;
   constructor(
     private activatedRoute: ActivatedRoute

@@ -6,8 +6,8 @@ export class Login implements FormGroupInterface {
   public email: string;
   public password: string;
 
-  constructor(usermane?: string, password?: string, email?: string) {
-    this.email = usermane;
+  constructor(email: string = '', password: string = '') {
+    this.email = email;
     this.password = password;
   }
 

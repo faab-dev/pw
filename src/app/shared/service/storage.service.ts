@@ -15,9 +15,10 @@ export class StorageService {
     sessionStorage.setItem(name, value);
   }
 
-  private readSession(name: string): string {
-    name = environment.getPrefix() + this.cookie.DIVIDER + name;
-    return sessionStorage.getItem(name);
+  private readSession(sessionName: string): string {
+    sessionName = environment.getPrefix() + this.cookie.DIVIDER + sessionName;
+    const value = sessionStorage.getItem(sessionName);
+    return (value === null) ? '' : value;
   }
 
   private removeSession(name: string): void {
@@ -58,7 +59,8 @@ export class StorageService {
 
   readCache(key: string): string {
     key = environment.getPrefix() + key;
-    return localStorage.getItem(key);
+    const value = localStorage.getItem(key);
+    return (value === null) ? '' : value;
   }
 
 }

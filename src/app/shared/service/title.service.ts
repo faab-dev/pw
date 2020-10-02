@@ -22,7 +22,7 @@ export class TitleService {
     this.setPrefix(title, hidePrefix);
   }
 
-  private setPrefix(title?: string, hidePrefix?: boolean): void {
+  private setPrefix(title: string = '', hidePrefix?: boolean): void {
     this.title.setTitle((hidePrefix === true) ? title : this.PREFIX + this.DIVIDER + title);
   }
 }

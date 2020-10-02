@@ -16,7 +16,7 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
   public authStatus: AuthStatusEnum = AuthStatusEnum.INITIALIZED;
   protected title = '';
 
-  private flagFormError = null;
+  private flagFormError: any;
 
   constructor(
     public model: FormGroupInterface,
@@ -52,7 +52,11 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
 
     // form error
     if (field === null) {
-      if (this.flagFormError && this.flagFormError.validation_errors && this.flagFormError.show) {
+      if (
+        this.flagFormError
+        && this.flagFormError.validation_errors
+        && this.flagFormError.show
+      ) {
         return this.flagFormError;
       }
       formValidationErrors.validation_errors = this.formModel.errors;
@@ -71,10 +75,10 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
     // form control error
     if (!field /*|| !this.f[field]*/) {
       // throw new Error('Wrong argument: incorrect field setted.');
-      return;
+      return formValidationErrors;
     }
 
-    const formControl: AbstractControl = this.formModel.get(field);
+    const formControl: AbstractControl | null = this.formModel.get(field);
 
     if (formControl === null) {
       return formValidationErrors;
@@ -96,12 +100,18 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
       console.log('no errors');
       return '';
     }
-    const errorMessageValue = {
+    const errorMessageValue: {[key: string]: any} = {
       required: 'This field is required. '
     };
     let message = '';
     for (const [key, value] of Object.entries(errors.validation_errors)) {
-      if (!value || !key || !errorMessageValue[key]) {
+      if (
+        !value
+        || !key
+        || !errorMessageValue
+        || !errorMessageValue[key]
+        || typeof errorMessageValue[key] !== 'string'
+      )  {
         continue;
       }
       message += errorMessageValue[key];
@@ -130,10 +140,16 @@ export class AuthBaseComponent extends SeparatedBaseComponent {
 
       const length = validationErrorsKey.length;
       for (let i = 0; i < length; i++) {
-        formValidationErrors[validationErrorsKey[i]] = true;
+        if (formValidationErrors.validation_errors == null) {
+          formValidationErrors.validation_errors = {};
+        }
+        formValidationErrors.validation_errors[validationErrorsKey[i]] = true;
       }
     } else {
-      formValidationErrors[validationErrorsKey] = true;
+      if (formValidationErrors.validation_errors == null) {
+        formValidationErrors.validation_errors = {};
+      }
+      formValidationErrors.validation_errors[validationErrorsKey] = true;
     }
     this.formModel.setErrors(formValidationErrors);
     this.authStatus = AuthStatusEnum.INITIALIZED;
