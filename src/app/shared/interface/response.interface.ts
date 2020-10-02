@@ -1,6 +1,6 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
 
 export interface ResponseInterfaces<T> {
-  success(obj: T, response): void;
+  success(obj: T, response: HttpResponse<any> | null): void;
   failed?(err: HttpErrorResponse): void;
 }

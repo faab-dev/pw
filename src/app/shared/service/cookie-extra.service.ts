@@ -8,10 +8,15 @@ export class CookieExtraService extends CookieService {
   public readonly DIVIDER = '_';
   private PREFIX = 'SERIALIZE:';
 
-  set(name: string, value, expires?: number | Date, path?: string, domain?: string, secure?: boolean): void {
-    if (value instanceof Object) {
-      value = this.PREFIX + JSON.stringify(value);
+  set(name: string, value: any, expires?: number | Date, path?: string, domain?: string, secure?: boolean): void {
+    if (value === null) {
+      value = '';
+    } else {
+      if (value instanceof Object) {
+        value = this.PREFIX + JSON.stringify(value);
+      }
     }
+
 
     if (!expires) {
       expires = 365 * 1;
@@ -23,7 +28,7 @@ export class CookieExtraService extends CookieService {
   }
 
 
-  getObj<T>(name: string): T {
+  getObj<T>(name: string): T | null{
     const str = this.get(name);
     if (str.search(this.PREFIX) === 0) {
       JSON.parse(str.substring(this.PREFIX.length));
@@ -64,7 +69,9 @@ export class CookieExtraService extends CookieService {
 
   getCookie(name: string): string {
     const cookieName: string = environment.getPrefix() + this.DIVIDER + name;
-    const all: {} = super.getAll();
+    const all: {
+      [key: string]: string;
+    } = super.getAll();
     return (all[cookieName]) ? all[cookieName] : '';
   }
 

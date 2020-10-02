@@ -31,7 +31,7 @@ export class CustomMatErrorComponent {
   increment = 0;
 
   @Input()
-  set error(value) {
+  set error(value: string) {
     console.log('value ', value);
     if (value) {
       if (this.message !== value) {

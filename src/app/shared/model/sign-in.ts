@@ -8,7 +8,7 @@ export class SignIn implements FormGroupInterface {
   public passwordConfirm: string;
   public email: string;
 
-  constructor(usermane?: string, email?: string, password?: string, passwordConfirm?: string) {
+  constructor(usermane: string = '', email: string = '', password: string = '', passwordConfirm: string = '') {
     this.username = usermane;
     this.password = password;
     this.passwordConfirm = passwordConfirm;
@@ -17,13 +17,19 @@ export class SignIn implements FormGroupInterface {
 
   public static matchValues(
     matchTo: string // name of the control to match to
-  ): (AbstractControl) => ValidationErrors | null {
+  ): (control: AbstractControl) => ValidationErrors | null {
     return (control: AbstractControl): ValidationErrors | null => {
-      return !!control.parent &&
-      !!control.parent.value &&
-      control.value === control.parent.controls[matchTo].value
-        ? null
-        : { isMatching: false };
+      if (
+        !!control.parent
+        && !!control.parent.value
+        && control.parent.controls
+      ) {
+        const controls: {[key: string]: AbstractControl} | AbstractControl[] = control.parent.controls;
+        if (!Array.isArray(controls)) {
+          return (control.value === controls[matchTo].value) ? null : { isMatching: false };
+        }
+      }
+      return null;
     };
   }
 
@@ -37,8 +43,11 @@ export class SignIn implements FormGroupInterface {
   }
 
   checkPasswords(group: FormGroup): {notSame: true} | null { // here we have the 'passwords' group
-    const pass = group.get('password').value;
-    const confirmPass = group.get('confirmPass').value;
+
+    const passwordControl: AbstractControl | null = group.get('password');
+    const passwordConfirmControl: AbstractControl | null = group.get('password');
+    const pass = (passwordControl === null) ? '' : passwordControl.value;
+    const confirmPass = (passwordConfirmControl === null) ? '' : passwordConfirmControl.value;
 
     return pass === confirmPass ? null : { notSame: true };
   }

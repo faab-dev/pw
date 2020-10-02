@@ -35,41 +35,49 @@ export class TransferCreateDialogComponent extends SeparatedBaseComponent {
   onInit(): void {
     super.onInit();
 
-    const fControlName: AbstractControl = this.formModel.get('name');
-    fControlName.setValue(this.data.name);
-    this.formModel.get('amount').setValue( Math.abs(this.data.amount));
-    this.filteredOptions = fControlName.valueChanges.pipe(
-      startWith(''),
-      map(
-        (nameFilterValue) => {
-          console.log('before new observable nameFilterValue: ' + nameFilterValue);
-          return new Observable(
-            (observer: Observer<string[]>) => {
-              this.http
-                .post<FilteredUsernameInterface[]>(
-                  '/api/protected/users/list',
-                  {filter: nameFilterValue},
-                  {
-                    success(objs: FilteredUsernameInterface[]): void {
-                      console.log('http success objs: ' + objs);
-                      if (!objs || !Array.isArray(objs)) {
-                        return;
-                      }
-                      console.log('objs: ');
-                      console.log(objs);
-                      observer.next(objs.map(
-                        (value: FilteredUsernameInterface) => {
-                          return value.name;
+    const fControlName: AbstractControl | null = this.formModel.get('name');
+    const fControlAmount: AbstractControl | null = this.formModel.get('amount');
+    if (fControlAmount) {
+      fControlAmount.setValue(Math.abs(this.data.amount));
+    }
+    if (fControlName) {
+      fControlName.setValue(this.data.name);
+
+      this.filteredOptions = fControlName.valueChanges.pipe(
+        startWith(''),
+        map(
+          (nameFilterValue) => {
+            console.log('before new observable nameFilterValue: ' + nameFilterValue);
+            return new Observable(
+              (observer: Observer<string[]>) => {
+                this.http
+                  .post<FilteredUsernameInterface[]>(
+                    '/api/protected/users/list',
+                    {filter: nameFilterValue},
+                    {
+                      success(objs: FilteredUsernameInterface[]): void {
+                        console.log('http success objs: ' + objs);
+                        if (!objs || !Array.isArray(objs)) {
+                          return;
                         }
-                      ));
-                    }
-                  } as ResponseInterfaces<FilteredUsernameInterface[]>
-                );
-            }
-          );
-        }
-      )
-    );
+                        console.log('objs: ');
+                        console.log(objs);
+                        observer.next(objs.map(
+                          (value: FilteredUsernameInterface) => {
+                            return value.name;
+                          }
+                        ));
+                      }
+                    } as ResponseInterfaces<FilteredUsernameInterface[]>
+                  );
+              }
+            );
+          }
+        )
+      );
+    }
+
+
   }
 
   onNoClick(): void {
@@ -78,11 +86,35 @@ export class TransferCreateDialogComponent extends SeparatedBaseComponent {
 
   onSubmit(): void {
     const self = this;
+    const fControlName: AbstractControl | null = this.formModel.get('name');
+    const fControlAmount: AbstractControl | null = this.formModel.get('amount');
+    if (
+      !fControlName
+      || !fControlAmount
+    ) {
+      return;
+    }
+    if (!fControlName.value) {
+      fControlName.setErrors(
+        {
+          required: true
+        }, {emitEvent: true}
+      );
+      return;
+    }
+    if (!fControlAmount.value || isNaN(fControlAmount.value)) {
+      fControlAmount.setErrors(
+        {
+          required: true
+        }, {emitEvent: true}
+      );
+      return;
+    }
     this.http
       .post<TransTokenNewInterface>(
         '/api/protected/transactions',
-        {name: this.formModel.get('name').value,
-          amount: parseFloat(this.formModel.get('amount').value).toFixed(2)
+        {name: fControlName.value,
+          amount: parseFloat(fControlAmount.value).toFixed(2)
         },
         {
           success(obj: TransTokenNewInterface): void {

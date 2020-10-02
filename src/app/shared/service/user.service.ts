@@ -9,12 +9,23 @@ import {AppPathEnum} from '../enum/app-path.enum';
 })
 export class UserService {
 
-  private userInfo: UserInfo;
+  private userInfo: UserInfo = this.getDefaultUserInfo();
 
   constructor(
     private storage: StorageService,
     private router: Router
   ) {}
+
+  private getDefaultUserInfo(): UserInfo {
+    return {
+      user_info_token: {
+        id: '',
+        name: '',
+        email: '',
+        balance: 0
+      }
+    };
+  }
 
   isUserAuth(): boolean {
     return !!(this.storage.getAuthKey());
@@ -38,7 +49,7 @@ export class UserService {
 
   logout(errStatus?: number): void {
     this.storage.logout();
-    this.userInfo = undefined;
+    this.userInfo = this.getDefaultUserInfo();
     const logoutPath: string[] = ['/'];
     if (errStatus) {
       logoutPath.push(AppPathEnum.error,  errStatus.toString(10));
