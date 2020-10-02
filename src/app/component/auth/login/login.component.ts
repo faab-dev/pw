@@ -4,7 +4,6 @@ import {AuthBaseComponent} from '../auth-base.component';
 import {Router} from '@angular/router';
 import {StorageService} from '../../../shared/service/storage.service';
 import {AuthStatusEnum} from '../../../shared/enum/auth-status.enum';
-import {SignIn} from '../../../shared/model/sign-in';
 import {AuthToken} from '../../../shared/interface/auth-token.interface';
 import {ResponseInterfaces} from '../../../shared/interface/response.interface';
 import {AuthError} from '../../../shared/enum/auth-error.enum';
@@ -50,12 +49,14 @@ export class LoginComponent extends AuthBaseComponent {
           self.checkAuthUserRoles(obj);
         },
         failed(error): void {
-          switch (error.status) {
-            case 404:
-              self.setFormErrors(AuthError.USER_NOT_FOUND);
-              return;
-            default:
-              self.authStatus = AuthStatusEnum.INITIALIZED;
+          if (!error) {
+            return;
+          }
+          if (error.status === 401) {
+            if (error.error === 'Invalid email or password.') {
+              self.setFormErrors(AuthError.USER_OR_PASSWORD_NOT_FOUND);
+            }
+
           }
         }
       } as ResponseInterfaces<AuthToken>);

@@ -17,3 +17,15 @@ select:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
   -webkit-background-color: transparent;
 }
+
+.create-transfer-panel {
+  .mat-dialog-content {
+    height: calc(60vh - 100px);
+    max-height: unset;
+  }
+
+  .mat-form-field {
+    width: 100%;
+  }
+
+}
